@@ -18,6 +18,7 @@ public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
 
 
     /* this should be private */
+    /*  COMMENTS */
     Vector<E> list;
     int n;
 

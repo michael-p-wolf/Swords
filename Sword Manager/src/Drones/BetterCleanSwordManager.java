@@ -14,16 +14,13 @@ import java.util.ArrayList;
 
 /**
  * Manages everything regarding the cleaning of swords in our game.  Will be integrated with
- *   the other drone classes.  UPDATED VERSION -- handles sword management with the new rules.
- *   Old version-CleanSwordManager-is deprecated.
- *
- * <bold>251 students: you may use any of the data structures you have previously created, but may not use
- *   any Java library for stacks, queues, min heaps/priority queues, or hash tables (or any similar classes).</bold>
+ * the other drone classes
  */
 public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface {
 
-    
-
+    /**
+     * Request class to hold information about time and sword returned
+     */
     private class Request implements Comparable<Request> {
         int time;
         int totalHealth;
@@ -39,12 +36,10 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
             this.style = style;
         }
 
-        public int compareTo (Request request) {
+        public int compareTo(Request request) {
             return this.time - request.time;
         }
     }
-
-
 
     /**
      * Gets the cleaning times per the specifications.
@@ -61,51 +56,53 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
         try {
             BufferedReader bf = new BufferedReader(new FileReader(filename));
 
-            /* input:
-            number of swords in game _ number of requests
-
-            C, T, TH, HL, L, DPS, AS, "N", "DSC", "COM", "STY"
-
-            ... for number of swords in game
-
-            Z_j, TH, DPS, AS, "STY"
-
-            ... for number of requests
-
-
-            ID depends on TH, DPS, AS, STY **PUT IN HASH FUNCTION
-
-            plan: put all the swords in the game w/ all information into a hashtable, w/ key based on TH, DPS, AS, "STY"
-            create a min heap w/ simpleSword object (only has 4 attributes).
-            When a request is filled, get the sword object from the hash table... but do we even need all the other info?
-
-
+            /** input:
+             * Line 1: Z number of swords in game (N) _ Z number of requests (M)
+             *
+             * Lines [2, N + 1]: C, T, TH, HL, L, DPS, AS, "N", "DSC", "COM", "STY" ... for number of swords in game
+             *
+             * Lines [N + 2, M + N + 1]: Z_j, TH, DPS, AS, "STY", ... for number of requests
              */
 
-            String[] line = bf.readLine().split(" ");
-            int N = Integer.valueOf(line[0]);
-            int M = Integer.valueOf(line[1]);
+            String[] line = null;
+            int N = 0;
+            int M = 0;
+
+            try {
+                line = bf.readLine().split(" ");
+                N = Integer.valueOf(line[0]);
+                M = Integer.valueOf(line[1]);
+            } catch (Exception e) {
+                System.err.println("Error on line 1" + e.getMessage());
+                System.exit(1);
+            }
 
             MinHeap<Sword> swordHeap = new MinHeap<>();
             BetterHashTable<Integer, Sword> swordHash = new BetterHashTable();
 
             int requestOrder = 0;
 
+            /* read N lines for all the swords and add them to an appropriate data structure */
+
             for (int i = 0; i < N; i++) {
-                String[] swordLine = bf.readLine().split(", ");
+                String[] swordLine = null;
+                Sword sword = null;
+                try {
+                    swordLine = bf.readLine().split(", ");
 
+                    sword = new Sword(Integer.valueOf(swordLine[0]), Integer.valueOf(swordLine[1]),
+                            Integer.valueOf(swordLine[2]), Integer.valueOf(swordLine[3]),
+                            Integer.valueOf(swordLine[4]), Integer.valueOf(swordLine[5]),
+                            Integer.valueOf(swordLine[6]), swordLine[7].substring(1, swordLine[7].length() - 1), swordLine[8].substring(1, swordLine[8].length() - 1),
+                            swordLine[9].substring(1, swordLine[9].length() - 1), swordLine[10].substring(1, swordLine[10].length() - 1));
+                } catch (Exception e) {
+                    System.err.println("Error on line " + (i + 2) + "\n" + e.getMessage());
+                    System.exit(1);
+                }
 
-                Sword sword = new Sword(Integer.valueOf(swordLine[0]), Integer.valueOf(swordLine[1]),
-                                        Integer.valueOf(swordLine[2]), Integer.valueOf(swordLine[3]),
-                                        Integer.valueOf(swordLine[4]), Integer.valueOf(swordLine[5]),
-                                        Integer.valueOf(swordLine[6]), swordLine[7].substring(1, swordLine[7].length() -1), swordLine[8].substring(1, swordLine[8].length() -1),
-                                        swordLine[9].substring(1, swordLine[9].length() -1), swordLine[10].substring(1, swordLine[10].length() -1));
-
-/*
-                SimpleSword simpleSword = new SimpleSword(Integer.valueOf(swordLine[0]), Integer.valueOf(swordLine[1]),
-                                                          Integer.valueOf(swordLine[2]), Integer.valueOf(swordLine[5]),
-                                                          Integer.valueOf(swordLine[6]), swordLine[10]);
-                                                          */
+                /* if the sword is in our possession, add to the min heap      */
+                /* Otherwise, add it to the hash table to store cleaning time */
+                /* adding request order to make min heap stable               */
 
                 if (sword.getCleanliness() != -1) {
                     sword.setTimeOfClean(sword.getCleanliness());
@@ -116,59 +113,46 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
                 swordHash.insert(sword.HashCode(), sword);
             }
 
-            /* a hash table would be good for swords if we want to find and return them */
-            /* maybe a hash table of swords and a min heap of the swords w/ less info */
-
-            //MinHeap<Request> requestHeap = new MinHeap<>();
-
             BetterQueue<Request> requestQueue = new BetterQueue<>();
 
+            /* read M lines for all the requests and add them to a queue */
+
             for (int i = 0; i < M; i++) {
-                String[] requestLine = bf.readLine().split(", ");
-                Request request = new Request(Integer.valueOf(requestLine[0]), Integer.valueOf(requestLine[1]),
-                                              Integer.valueOf(requestLine[2]), Integer.valueOf(requestLine[3]),
-                                              requestLine[4].substring(1, requestLine[4].length() -1));
+                String[] requestLine = null;
+                Request request = null;
+
+                try {
+                    requestLine = bf.readLine().split(", ");
+                    request = new Request(Integer.valueOf(requestLine[0]), Integer.valueOf(requestLine[1]),
+                            Integer.valueOf(requestLine[2]), Integer.valueOf(requestLine[3]),
+                            requestLine[4].substring(1, requestLine[4].length() - 1));
+                } catch (Exception e) {
+                    System.err.println("Error on line " + (i + N + 2) + "\n" + e.getMessage());
+                    System.exit(1);
+                }
                 requestQueue.add(request);
             }
-
-            /* why would i use a min heap for request if they're already sorted */
-
-            //finishedSwords.add(new DetailedCleanSwordTime<>(0, 0, Sword asdf));
-
-            /* add swords to a min heap based on timeOfClean*/
-            /* add requests to a min heap based on time of request */
 
             int t = 0;
 
             BetterQueue<Sword> finishedSwordQueue = new BetterQueue<>();
             BetterQueue<Request> finsihedRequestQueue = new BetterQueue<>();
 
-
             while (true) {
-                //System.out.println("t: " + t);
                 while (!requestQueue.isEmpty() && requestQueue.peek().time == t) {
                     Request current = requestQueue.remove();
+                    Sword sword = new Sword(-1, -1, current.totalHealth,
+                            -1, -1, current.DPS, current.attackSpeed,
+                            "", "", "", current.style);
 
-                    //System.out.println("current attack speed: " + current.attackSpeed);
-                    //SimpleSword sword = new SimpleSword(-1, -1, current.totalHealth, current.DPS, current.attackSpeed, current.style);
-                    Sword sword = new Sword(-1,-1, current.totalHealth,
-                                  -1,-1,current.DPS, current.attackSpeed,
-                                      "","","", current.style);
+                    sword = swordHash.get(sword.HashCode());
 
-
-
-
-                    /*how can we efficiently check that the sword in already in the heap */
-
-                    sword = swordHash.get(sword.HashCode()); //need to keep track of time to clean probably need hash table
-                    
                     boolean addToHeap = false;
                     if (sword.getTimeOfClean() == -1) {
                         addToHeap = true;
                         sword.setCleanliness(sword.getTimeToClean());
                         sword.setTimeOfClean(t + sword.getTimeToClean());
                     }
-                    
 
                     sword.setRequestOrder(requestOrder);
                     requestOrder++;
@@ -178,10 +162,9 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
                     }
 
                     finsihedRequestQueue.add(current);
-
                 }
 
-                while (swordHeap.size() != 0 && swordHeap.peekMin().getTimeOfClean() <= t) { /* consider <= */
+                while (swordHeap.size() != 0 && swordHeap.peekMin().getTimeOfClean() <= t) {
                     finishedSwordQueue.add(swordHeap.removeMin());
                 }
 
@@ -192,7 +175,7 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
                     finishedSwords.add(new DetailedCleanSwordTime<>(t, t - request.time, sword));
                 }
 
-                //advance to next t
+                /* advance to the next necessary t */
 
                 int nextSword = Integer.MAX_VALUE;
                 int nextRequest = Integer.MAX_VALUE;
@@ -202,36 +185,19 @@ public class BetterCleanSwordManager implements BetterCleanSwordManagerInterface
                 if (!requestQueue.isEmpty()) {
                     nextRequest = requestQueue.peek().time;
                 }
-                //System.out.println("next sword: " + nextSword + " next request: " + nextRequest);
                 if (nextSword < nextRequest) {
                     t = nextSword;
                 } else {
                     t = nextRequest;
                 }
 
-                //if request queue is empty then break
-
                 if (requestQueue.isEmpty() && finsihedRequestQueue.isEmpty()) {
                     break;
                 }
 
             }
-
-
-
-
-            //MinHeap<Sword>;
-
-            /* could make a new request object */
-
-
-
-            /* put all swords in a has table right away ? */
-
-            //todo
         } catch (IOException e) {
-            //This should never happen... uh oh o.o
-            System.err.println("ATTENTION TAs: Couldn't find test file: \"" + filename + "\":: " + e.getMessage());
+            System.err.println("Couldn't find test file: \"" + filename + "\":: " + e.getMessage());
             System.exit(1);
         }
         return finishedSwords;

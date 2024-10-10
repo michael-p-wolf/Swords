@@ -5,23 +5,10 @@ import CommonUtils.Interfaces.BetterQueueInterface;
 import java.awt.*;
 
 /**
- * @implNote implement a queue using a circular array with initial capacity 8.
- *
- * Implement BetterQueueInterface and add a constructor
- *
- * You are explicitly forbidden from using java.util.Queue and any subclass
- * (including LinkedList, for example) and any other java.util.* library EXCEPT java.util.Objects.
- * Write your own implementation of a Queue.
- *
- * Another great example of why we are implementing our own queue here is that
- * our queue is actually FASTER than Java's LinkedList (our solution is 2x faster!). This is due
- * to a few reasons, the biggest of which are 1. the overhead associated with standard library
- * classes, 2. the fact that Java's LinkedList doesn't store elements next to each other, which
- * increases memory overhead for the system, and 3. LinkedList stores 2 pointers with each element,
- * which matters when you store classes that aren't massive (because it increases the size of each
- * element, making more work for the system).
- *
  * @param <E> the type of object this queue will be holding
+ * @implNote implement a queue using a circular array with initial capacity 8.
+ * <p>
+ * Implement BetterQueueInterface and add a constructor
  */
 public class BetterQueue<E> implements BetterQueueInterface<E> {
 
@@ -34,44 +21,23 @@ public class BetterQueue<E> implements BetterQueueInterface<E> {
     /**
      * If the array needs to increase in size, it should be increased to
      * old capacity * INCREASE_FACTOR.
-     *
+     * <p>
      * If it cannot increase by that much (old capacity * INCREASE_FACTOR > max int),
      * it should increase by CONSTANT_INCREMENT.
-     *
+     * <p>
      * If that can't be done either throw OutOfMemoryError()
-     *
      */
     private final int INCREASE_FACTOR = 2;
     private final int CONSTANT_INCREMENT = 1 << 5; // 32
 
-
-
     /**
      * If the number of elements stored is < capacity * DECREASE_FACTOR, it should decrease
      * the capacity of the UDS to max(capacity * DECREASE_FACTOR, initial capacity).
-     *
      */
     private final double DECREASE_FACTOR = 0.5;
 
-
     /**
-     * Array to store elements in (according to the implementation
-     * note in the class header comment).
-     *
-     * Circular arrays work as follows:
-     *
-     *   1. Removing an element increments the "first" index
-     *   2. Adding an element inserts it into the next available slot. Incrementing
-     *      the "last" index WRAPS to the front of the array, if there are spots available
-     *      there (if we have removed some elements, for example).
-     *   3. The only way to know if the array is full is if the "last" index
-     *      is right in front of the "first" index.
-     *   4. If you need to increase the size of the array, put the elements back into
-     *      the array starting with "first" (i.e. "first" is at index 0 in the new array).
-     *   5. No other implementation details will be given, but a good piece of advice
-     *      is to draw out what should be happening in each operation before you code it.
-     *
-     *   hint: modulus might be helpful
+     * Array to store elements in
      */
     private E[] queue;
     private int first;
@@ -83,7 +49,7 @@ public class BetterQueue<E> implements BetterQueueInterface<E> {
      * Constructs an empty queue
      */
     @SuppressWarnings("unchecked")
-    public BetterQueue(){
+    public BetterQueue() {
         queue = (E[]) new Object[INIT_CAPACITY];
         first = 0;
         last = 0;
@@ -103,10 +69,12 @@ public class BetterQueue<E> implements BetterQueueInterface<E> {
             throw new NullPointerException();
         }
 
-        if (this.size == this.capacity) { //idk if this is right
+        /* increasing size if necessary */
+
+        if (this.size == this.capacity) {
             if (this.capacity * INCREASE_FACTOR > Integer.MAX_VALUE) {
                 if (this.capacity + CONSTANT_INCREMENT > Integer.MAX_VALUE) {
-                    throw new OutOfMemoryError();//not sure if this is being tested
+                    throw new OutOfMemoryError();
                 } else {
                     E[] newQueue = (E[]) new Object[this.capacity + CONSTANT_INCREMENT];
                     for (int i = 0; i < this.capacity; i++) {
@@ -162,17 +130,17 @@ public class BetterQueue<E> implements BetterQueueInterface<E> {
         first = (first + 1) % capacity;
         size--;
 
+        /* decrease the size of the array if necessary */
+
         if ((size <= capacity * DECREASE_FACTOR) && (capacity * DECREASE_FACTOR >= INIT_CAPACITY)) {
-            capacity = (int)(this.capacity * DECREASE_FACTOR);
+            capacity = (int) (this.capacity * DECREASE_FACTOR);
             E[] newQueue = (E[]) new Object[capacity];
             for (int i = 0; i < capacity; i++) {
-                //newQueue[i] = queue[(first + i)];
                 newQueue[i] = queue[(first + i) % queue.length];
             }
-            last = 0; //because the queue is full
+            last = 0;
             queue = newQueue;
             first = 0;
-
         }
         return dequeued;
     }
@@ -208,8 +176,7 @@ public class BetterQueue<E> implements BetterQueueInterface<E> {
     @Override
     public void draw(Graphics g) {
         //DO NOT MODIFY NOR IMPLEMENT THIS FUNCTION
-        if(g != null) g.getColor();
+        if (g != null) g.getColor();
         //todo GRAPHICS DEVELOPER:: draw the queue how we discussed
-        //251 STUDENTS:: YOU ARE NOT THE GRAPHICS DEVELOPER!
     }
 }

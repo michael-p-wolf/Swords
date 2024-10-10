@@ -24,14 +24,22 @@ public class Sword extends SwordType implements Comparable<Sword> {
         this.timeOfClean = -1;
     }
 
-    public int compareTo (Sword sword) {
-        int compare = this.timeOfClean - sword.timeOfClean; /* this needs to be Time of clean, have to figure out how to add that */
+
+    /**
+     * CompareTo function for use in the min heap. Compares based off timeOfClean
+     * compares this.sword to @param sword
+     * If necessary, compares request order to mantain stability in the min heap
+     */
+
+    public int compareTo(Sword sword) {
+        int compare = this.timeOfClean - sword.timeOfClean;
         if (compare == 0) {
             return this.requestOrder - sword.requestOrder;
         }
         return compare;
 
     }
+
     public void setRequestOrder(int requestOrder) {
         this.requestOrder = requestOrder;
     }
@@ -39,25 +47,32 @@ public class Sword extends SwordType implements Comparable<Sword> {
     public int getCleanliness() {
         return this.cleanliness;
     }
+
     public int getTimeOfClean() {
         return this.timeOfClean;
     }
+
     public void setCleanliness(int cleanliness) {
         this.cleanliness = cleanliness;
     }
+
     public void setTimeOfClean(int timeOfClean) {
         this.timeOfClean = timeOfClean;
     }
 
+
+    /**
+     * Returns the hash code of this object, for internal use only
+     */
     public int HashCode() {
-        /* needs to be based on th, dps, as, sty */
+        /* unique hash code needs to be based on th, dps, as, sty */
 
         int total = 0;
-        
+
         /* summing the value for each char in the string */
-        
+
         for (int i = 0; i < this.style.length(); i++) {
-            total += this.style.charAt(i); 
+            total += this.style.charAt(i);
         }
 
         total = total * 100;
@@ -67,23 +82,8 @@ public class Sword extends SwordType implements Comparable<Sword> {
         return total;
     }
 
-
-
-
-    //hint: it might be helpful to implement a static function that returns a unique value based only on certain fields
-
-    /* probably want to implement my own .equals */
-
-
-    /**
-     * Returns the hash code of this object, for internal use only
-     *
-     * <bold>251 Students: This function will not be tested directly, it is for your convenience only.</bold>
-     * @return a hash code of the object
-     */
     @Override
     public int hashCode() {
-        //todo
-       return 0;
+        return 0;
     }
 }

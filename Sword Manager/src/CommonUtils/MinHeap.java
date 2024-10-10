@@ -9,50 +9,45 @@ import java.util.Vector;
  * Implements our MinHeapInterface and adds a constructor
  * <p>
  * <b>251 students: You are explicitly forbidden from using java.util.Queue (including any subclass
- *   like PriorityQueue) and any other java.util.* library EXCEPT java.util.Arrays and java.util.Vector.
- *   Write your own implementation of a MinHeap.</b>
+ * like PriorityQueue) and any other java.util.* library EXCEPT java.util.Arrays and java.util.Vector.
+ * Write your own implementation of a MinHeap.</b>
  *
  * @param <E> the type of object this heap will be holding
  */
 public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
-
-
-    /* this should be private */
-    /*  COMMENTS */
-    /* more comments */
-    Vector<E> list;
+    private Vector<E> list;
     int n;
 
     /**
      * A recursive method to heapify (sort the root to where it should go) a
-     *   subtree with the root at given index
+     * subtree with the root at given index
      * Assumes the subtrees are already heapified.
      * (The purpose of this method is to balance tree starting at the root)
+     *
      * @param i root of the subtree to heapify
      */
 
-    /* this should be private */
     public void heapify(int i) {
-        // i is the root of the subtree that we need to heapify
-        //heapify is bottom up
 
         /* let the base case be when the node at i has no children */
-        if ((leftChild(i) > n - 1) && (rightChild(i) > n - 1)) { /* the root has no children, don't need to heapify */
+
+        if ((leftChild(i) > n - 1) && (rightChild(i) > n - 1)) {
             return;
         }
 
         heapify(leftChild(i));
         heapify(rightChild(i));
-        /* heapifty right child */
-
-        /* get the minimum child of the parent and then swap if necessary */
 
         sinkDown(i);
     }
 
-    /* maybe write a sink down function */
-
-    private void sinkDown (int i) {
+    /**
+     * Function to fix the heap by sinking down a node
+     * for use in remove and heapify
+     *
+     * @param i index of the node to sink down
+     */
+    private void sinkDown(int i) {
         if (leftChild(i) >= n) { /* there are no children to sink down with */
             return;
         }
@@ -76,7 +71,11 @@ public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
         }
     }
 
-    private void swap (int i, int j) {
+    /**
+     * Simple swap function to swap the elements at index i and j
+     */
+
+    private void swap(int i, int j) {
         if (i >= n || j >= n) {
             return;
         }
@@ -89,18 +88,19 @@ public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
     private int getParent(int i) {
         return Math.floorDiv(i - 1, 2);
     }
-    private int leftChild (int i) {
+
+    private int leftChild(int i) {
         return 2 * i + 1;
     }
 
-    private int rightChild (int i) {
+    private int rightChild(int i) {
         return 2 * i + 2;
     }
 
     /**
      * Constructs an empty min heap
      */
-    public MinHeap(){
+    public MinHeap() {
         this.list = new Vector<>();
         n = 0;
     }
@@ -180,8 +180,6 @@ public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
         return n;
     }
 
-    /* debug */
-
     /**
      * DO NOT MODIFY NOR IMPLEMENT THIS FUNCTION
      *
@@ -190,8 +188,6 @@ public class MinHeap<E extends Comparable<E>> implements MinHeapInterface<E> {
     @Override
     public void draw(Graphics g) {
         //DO NOT MODIFY NOR IMPLEMENT THIS FUNCTION
-        if(g != null) g.getColor();
-        //todo GRAPHICS DEVELOPER:: draw the MinHeap how we discussed
-        //251 STUDENTS:: YOU ARE NOT THE GRAPHICS DEVELOPER!
+        if (g != null) g.getColor();
     }
 }
